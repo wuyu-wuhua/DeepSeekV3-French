@@ -168,9 +168,19 @@ function checkGoogleLoginCallback() {
         const cleanUrl = window.location.origin + window.location.pathname;
         window.history.replaceState({}, document.title, cleanUrl);
         
-        if (window.location.pathname !== '/index.html' && window.location.pathname !== '/') {
-            window.location.href = 'index.html'; 
+        // Modified redirect logic:
+        // Stay on view-profile.html if that's the callback page.
+        // Redirect from login.html/register.html to index.html.
+        // Other pages (if any were to be callback targets) also redirect to index.html.
+        const currentPath = window.location.pathname;
+        if (currentPath.endsWith('/login.html') || currentPath.endsWith('/register.html')) {
+            window.location.href = 'index.html';
+        } else if (currentPath !== '/index.html' && currentPath !== '/' && !currentPath.endsWith('/view-profile.html')) {
+            // This condition handles other unexpected callback pages by redirecting to index.html
+            window.location.href = 'index.html';
         }
+        // If currentPath is index.html, view-profile.html, or '/', no automatic redirect from here.
+        // For view-profile.html, populateUserProfilePage() will run shortly after this.
     }
 }
 
